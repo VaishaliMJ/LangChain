@@ -32,11 +32,11 @@ def main():
     
     model=createChatModel()
     chatHistory=[
-        SystemMessage(content="You are a helpful assistant").content,
+        SystemMessage(content="You are a helpful assistant"),
     ]
     while True:
         userInput=input("You    :   ")
-        chatHistory.append(HumanMessage(content=userInput).content)
+        chatHistory.append(HumanMessage(content=userInput))
         if userInput == "exit":
             break
         response=model.invoke(chatHistory)
