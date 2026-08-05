@@ -1,10 +1,24 @@
 """----------------------------------------------------------------------------------
-    Problem Statement   :   Prompt Template With Langchain Static Prompt
+    Problem Statement   :   Console Based Basic Chat Bot Application
     Author              :   Vaishali M. Jorwekar
 ----------------------------------------------------------------------------------"""
 from langchain_ollama import ChatOllama
 import streamlit as st
+from langchain_core.prompts import PromptTemplate
 
+###############################################################################
+#   Function        :   createChatModel
+#   Input Params    :   None
+#   Output Params   :   chatModel
+#   Description     :   Entry point of the program
+#   Author          :   Vaishali M Jorwekar
+###############################################################################
+def createChatModel():
+    model = ChatOllama(
+                    model="llama3",
+                    temperature=0.0
+            ) 
+    return model
 ###############################################################################
 #   Function        :   main
 #   Input Params    :   None
@@ -13,18 +27,20 @@ import streamlit as st
 #   Author          :   Vaishali M Jorwekar
 ###############################################################################
 def main():
-    st.title("Reaserch Tool")
-    userInput=st.text_input("Enter your prompt")
     
-    model = ChatOllama(
-        model="llama3",
-        temperature=0.0
-    ) 
-    if st.button("Summarize"):
+    model=createChatModel()
+    while True:
+        userInput=input("You    :   ")
+        if userInput == "exit":
+            break
         response=model.invoke(userInput)
-        st.write(response.content)
+        print(f"AI   :   {response.content}")
     
-    
+
+
+
+
+
 ###############################################################################
 #   Entry point of the program
 ###############################################################################

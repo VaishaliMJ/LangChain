@@ -1,3 +1,9 @@
+"""----------------------------------------------------------------------------------
+    Problem Statement   :   Basic Langchain model invoke functionality
+    Author              :   Vaishali M. Jorwekar
+----------------------------------------------------------------------------------"""
+
+
 from langchain_ollama import ChatOllama
 import os
 
