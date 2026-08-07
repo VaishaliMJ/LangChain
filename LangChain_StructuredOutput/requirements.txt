@@ -1,0 +1,7 @@
+langchain
+python-dotenv
+langchain-ollama
+langchain_groq
+streamlit
+pydantic
+pydantic[email]
