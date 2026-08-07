@@ -1,0 +1,109 @@
+"""----------------------------------------------------------------------------------
+    Problem Statement   :   Basic Langchain model with JSON
+    Author              :   Vaishali M. Jorwekar
+----------------------------------------------------------------------------------"""
+
+
+from langchain_ollama import ChatOllama
+import os
+
+
+BORDER="-"*65
+###############################################################################
+#   Class           :   json Schema
+#   Input Params    :   None
+#   Output Params   :   chatModel
+#   Description     :   Entry point of the program
+#   Author          :   Vaishali M Jorwekar
+###############################################################################
+def getJsonSchema():
+    json_schema = {
+    "title":    "Review",
+    "type"  : "object",
+    "properties":{
+        
+        "keyThemes" :   {
+            "type"  :   "array",
+            "items" :   {
+                "type"  :   "string"
+            },
+            "description":"Write down all key themes discussed in the review in a list"
+        },
+        
+    "summary":{
+        "type":"string",
+        "description":"A brief summary of review"
+        
+    },
+    
+    "sentiment":{
+        "type":"string",
+        "enum":["Positive","Negative"],
+        "desciption":"Return Sentiment of the review"
+    },
+    "pros":{
+        "type":["array","null"],
+        "items":{
+            "type":"string"
+        },
+        "description":"Write all pros inside a list"
+        
+    } ,
+    "cons":{
+        "type":["array","null"],
+        "items":{
+            "type":"string"
+        },
+        "description":"Write all Cons inside a list"
+        
+    } , 
+    },
+    "required": ["keyThemes", "summary", "sentiment"]   
+    
+    
+    
+    
+    }
+    return json_schema 
+###############################################################################
+#   Function        :   createChatModel
+#   Input Params    :   None
+#   Output Params   :   chatModel
+#   Description     :   Entry point of the program
+#   Author          :   Vaishali M Jorwekar
+###############################################################################
+def createChatModel():
+    model = ChatOllama(
+                    model="llama3",
+                    temperature=0.0
+            ) 
+    return model
+###############################################################################
+#   Function        :   main
+#   Input Params    :   None
+#   Output Params   :   None
+#   Description     :   Entry point of the program
+#   Author          :   Vaishali M Jorwekar
+###############################################################################
+def main():
+    model = createChatModel()
+    jsonSchema=getJsonSchema()
+    structuredModel=model.with_structured_output(jsonSchema)
+    
+    response=structuredModel.invoke("""
+                                  Machine Learning (ML) algorithms are broadly categorized into four primary types based on how they learn from data to make predictions: Supervised Learning, Unsupervised Learning, Semi-Supervised Learning, and Reinforcement Learning.1. Supervised LearningThe model learns from labelled training data containing both inputs and the correct output answers.Regression: Predicts continuous numerical values (e.g., predicting stock prices or housing costs using Linear Regression).Classification: Assigns data into distinct, categorical buckets (e.g., sorting emails into spam/ham or classifying images using Convolutional Neural Networks (CNNs)).2. Unsupervised LearningThe model analyzes unlabelled data to discover hidden patterns, groupings, or structures on its own.Clustering: Groups similar data points together based on shared features (e.g., customer segmentation using K-Means).Dimensionality Reduction: Compresses data by removing redundant features while keeping vital info (e.g., Principal Component Analysis).Association Rule Learning: Identifies interesting relationships between variables in large databases (e.g., market basket analysis).3. Semi-Supervised LearningThe system trains on a small amount of labelled data combined with a large amount of unlabelled data.Utility: Saves massive time and cost since labelling data manually is highly expensive.Use Case: Text classification or medical imaging where only a few files are annotated by experts.4. Reinforcement LearningThe algorithm acts as an autonomous agent that learns by trial and error using a system of rewards and penalties.Mechanism: Maximizes total reward points over time by navigating an environment.Use Case: Training autonomous vehicles, robotic manufacturing arms, or mastering complex strategic games like chess and Go..
+                                 """)
+    
+    print(BORDER)
+    """print(f"Summary :   {response["summary"]}")
+    print(f"Sentiment   :   {response["sentiment"]}")
+    print(f"Key Themes   :   {response["keyThemes"]}")
+    print(f"Pros   :   {response["pros"]}")
+    print(f"Cons   :   {response["cons"]}")"""
+    print(response)
+    print(BORDER)
+###############################################################################
+#   Entry point of the program
+###############################################################################
+if __name__=="__main__":
+    main()
