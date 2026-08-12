@@ -1,3 +1,8 @@
+"""----------------------------------------------------------------------------------
+    Problem Statement   :   Langchain : Parallel Chain
+    Author              :   Vaishali M. Jorwekar
+----------------------------------------------------------------------------------"""
+
 from langchain_ollama import ChatOllama
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
