@@ -2,14 +2,17 @@
     Problem Statement   :   You Tube Video Chat Bot
     Author              :   Vaishali M. Jorwekar
 ----------------------------------------------------------------------------------"""
-from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
+#from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings, ChatOllama
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain_core.documents import Document
+
+from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import TranscriptsDisabled
 ###############################################################################
-VIDEO_ID="6SO-8FcSkz4"
+VIDEO_ID="Gfr50f6ZBvo"
 BORDER="-"*60
 ###############################################################################
 #   Function        :   getVideoTranscript
@@ -20,15 +23,21 @@ BORDER="-"*60
 ###############################################################################
 def getVideoTranscript():
     try:
-        transcript = YouTubeTranscriptApi().fetch(VIDEO_ID)
-
-        print("Transcripted Video chunk 0 ")
+        transcriptList = YouTubeTranscriptApi().fetch(VIDEO_ID)
+        transcript = " ".join(chunk.text for chunk in transcriptList)
+        print(transcriptList)
+        """fetched_transcript = YouTubeTranscriptApi().fetch(VIDEO_ID, languages=['en'])
+        #print(f"Transcripted Video chunk 0 {fetched_transcript}")
+        transcript_list = fetched_transcript.to_raw_data()
+        transcript = " ".join(chunk["text"] for chunk in transcript_list)
         print(BORDER)
-        print(transcript[0])
-        print(f"Transcript Chunk Length :{len(transcript)}")
-        print(BORDER)
+        print(transcript)
+        print(BORDER)"""
+        #print("Transcripted Video chunk 0 ")
     except TranscriptsDisabled:
-        print("No Capitons available for this video")
+         print("No captions available for this video.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
             
     return transcript
 
@@ -61,14 +70,17 @@ def formatTranscript(transcriptList):
 #   Author          :   Vaishali M Jorwekar
 ###############################################################################
 def splitTranscript(transcript):
-    cleaned_docs = [doc for doc in transcript if doc.page_content.strip()]
+    #cleaned_docs = [doc for doc in transcript if doc.page_content.strip()]
 
     spliiter=RecursiveCharacterTextSplitter(
-        chunk_size=300,
-        chunk_overlap=30
+        chunk_size=1000,
+        chunk_overlap=200
     )
 
-    chunks=spliiter.split_documents(cleaned_docs)
+    chunks=spliiter.create_documents([transcript])
+    print(BORDER)
+    print(f"Chunks:{chunks}")
+    print(BORDER)
     return chunks
 ###############################################################################
 #   Function        :   createVectorStore
@@ -110,7 +122,7 @@ def getEmbeddings():
 def fetchLLMModel():
     llm = ChatOllama(
             model="llama3",
-            temperature=0.2
+            temperature=0
         )
     return llm
 ###############################################################################
@@ -140,8 +152,9 @@ def getPromptTemplate():
 ###############################################################################
 def main():
     transcript=getVideoTranscript()
-    formattedTranscriptText=formatTranscript(transcript)
-    chunks=splitTranscript(formattedTranscriptText)
+    #formattedTranscriptText=formatTranscript(transcript)
+    chunks=splitTranscript(transcript)
+    
     embeddingModel=getEmbeddings()
     #vectorStore=FAISS.from_documents(chunks,embeddingModel)
     vectorStore=createVectorStore(chunks,embeddingModel)
@@ -155,7 +168,7 @@ def main():
 
     prompt=getPromptTemplate()
 
-    question="What is Fine Tuning?"
+    question="what is deep mind"
     
     retrievedDocs=retriever.invoke(question)
     
